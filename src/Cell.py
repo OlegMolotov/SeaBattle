@@ -1,6 +1,9 @@
+import string
+
+
 class Cell:
     # Перечень цветов для ячеек игрового поля
-    _colors = {'blue': '34', 'black': '30', 'white': '37'}
+    _colors = {'red': '31', 'blue': '34', 'black': '30', 'white': '37'}
 
     def __init__(self, x, y):
         # Координаты ячейки в виде tuple(int, int)
@@ -11,6 +14,7 @@ class Cell:
         # свободна _is_deactivated = False
         # занята _is_deactivated = True
         self._is_deactivated = False
+        self._color = 'blue'
 
     @property
     def is_deactivated(self):
@@ -39,7 +43,7 @@ class Cell:
         консолью операционной системы Windows до Windows 10.
         Подробнее в статье https://habr.com/ru/sandbox/158854/
         """
-        return f'\033[{self._colors["blue"]}m{self._view}\033[0m'
+        return f'\033[{self._colors[self._color]}m{self._view}\033[0m'
         # if not self._is_deactivated:
         #     return f'\033[{self._colors["blue"]}m{self._view}\033[0m'
         # else:
@@ -59,17 +63,29 @@ class Border(Cell):
         super().__init__(x, y)
         # Символ в виде которого отображается ячейка на игровом поле str
         self._view = 'x'
+        self.left_alignment()
         # Хранит логический флаг отвечающий за состояние ячейки
         # _is_deactivated = True - ячейка всегда занята и это значение не должно
         # изменятся, так как экземпляры класса Border служат для вывода служебной информации
         self._is_deactivated = True
+        self._color = 'black'
 
-    def __repr__(self):
-        """
-        Переопределенный 'магический метод' __repr__ возвращает строку, которая
-        с помощью ANSI-кодов изменяет цвет символа отображения ячейки.
-        ANSI-коды работают на большинстве дистрибутивов Linux, но не поддерживаются
-        консолью операционной системы Windows до Windows 10.
-        Подробнее в статье https://habr.com/ru/sandbox/158854/
-        """
-        return f'\033[{self._colors["black"]}m{self._view}\033[0m'
+    def left_alignment(self):
+        if 12 > self._coord[0] >= 0 == self._coord[1] and len(self._view) < 2:
+            self._view = self._view.ljust(2, ' ')
+
+
+class History(Border):
+    _letter_history_chars = string.ascii_uppercase
+
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self._set_view(x, y)
+        self.left_alignment()
+        self._color = 'white'
+
+    def _set_view(self, x, y):
+        if 11 > x > 0 == y:
+            self._view = str(x)
+        elif x == 0 and 0 < y < 11:
+            self._view = self._letter_history_chars[y - 1]

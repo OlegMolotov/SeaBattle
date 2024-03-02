@@ -1,8 +1,8 @@
 from pprint import pprint
 from random import choice
-
-from src.Cell import Cell, Border
-
+import sys
+from src.Cell import Cell, Border, History
+import textwrap as tw
 
 class Board:
 
@@ -42,6 +42,11 @@ class Board:
                     self._active_cells.append((x, y))  # Добавляем координаты ячейки к списку свободных ячеек
                     line.append(cell)  # Добавляем экземпляр ячейки во внутренний список
                 # Заполняем неактивное игровое поле объектами типа Border
+                elif (self._size + width_border > x > 0 == y or
+                      x == 0 and 0 < y < self._size + width_border):
+                    border = History(x, y)  # Создаем экземпляр границы
+                    line.append(border)
+
                 else:
                     border = Border(x, y)  # Создаем экземпляр границы
                     line.append(border)  # Добавляем экземпляр границы во внутренний список
@@ -94,7 +99,7 @@ class Board:
         passage = 0
 
         while len(shp) != length_ship:
-            if passage == 1:
+            if passage == 2:
                 x, y = choice(self._active_cells)
                 direct = choice(('left', 'right', 'up', 'down'))
                 passage = 0
@@ -141,4 +146,10 @@ class Board:
                 self._board[x][y] = ship
 
     def draw(self):
-        pprint(self._board, compact=True, depth=2, width=self._size * 20)
+        # pprint(self._board, compact=True, depth=2, width=self._size * 20, indent=2)
+
+        for line in self._board:
+            line = str(''.join(str(line)))
+            print(line)
+
+
