@@ -43,10 +43,8 @@ class Cell:
         консолью операционной системы Windows до Windows 10.
         Подробнее в статье https://habr.com/ru/sandbox/158854/
         """
-        if self._coord[1] == 0 and len(self._view) < 2:
-            return f'\033[{self._colors[self._color]}m {self._view}\033[0m'
-        else:
-            return f'\033[{self._colors[self._color]}m{self._view}\033[0m'
+
+        return f'\033[{self._colors[self._color]}m{self._view}\033[0m'
 
 
 class Border(Cell):
@@ -61,24 +59,34 @@ class Border(Cell):
     def __init__(self, x, y):
         super().__init__(x, y)
         # Символ в виде которого отображается ячейка на игровом поле str
-        self._view = 'x'
+        self._view = ' '
         # Хранит логический флаг отвечающий за состояние ячейки
         # _is_deactivated = True - ячейка всегда занята и это значение не должно
         # изменятся, так как экземпляры класса Border служат для вывода служебной информации
         self._is_deactivated = True
         self._color = 'black'
 
+    def __repr__(self):
+        view = self._view
+        width_difference = 2
+        if self._coord[1] == 0 and len(self._view) < width_difference:
+            view = view.ljust(width_difference)
+        return f'\033[{self._colors[self._color]}m{view}\033[0m'
+
 
 class History(Border):
     _letter_history_chars = string.ascii_uppercase
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, board_size):
         super().__init__(x, y)
-        self._set_view(x, y)
+        self._set_view(x, y, board_size)
         self._color = 'white'
 
-    def _set_view(self, x, y):
-        if 11 > x > 0 == y:
+    def _set_view(self, x, y, board_size):
+
+        if board_size + 1 > x > 0 == y:
             self._view = str(x)
-        elif x == 0 and 0 < y < 11:
+        elif x == 0 and 0 < y < board_size + 1:
             self._view = self._letter_history_chars[y - 1]
+
+

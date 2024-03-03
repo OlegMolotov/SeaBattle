@@ -1,14 +1,17 @@
-from pprint import pprint
 from random import choice
 
 from src.Cell import Cell, Border, History
+from src.Ship import Ship
 
 
 class Board:
+    _MAX_SIZE = 25
+    _MIN_SIZE = 10
 
     def __init__(self, size=10):
         # Размер игрового поля, по умолчанию равен 10 (классический вариант игры).
-        self._size = size
+        if self._valid_size(size):
+            self._size = size
         # Содержит список свободных ячеек игрового поля в виде кортежей координат
         # list[tuple(int, int), tuple(int, int), ...].
         self._active_cells = list()
@@ -17,7 +20,17 @@ class Board:
         # и соответственно верхняя и нижняя.
         self._board = self._create_board()
 
-        self.ships = []
+        self._default_ships = [Ship(4), Ship(3), Ship(3), Ship(2),
+                               Ship(2), Ship(2), Ship(1), Ship(1), Ship(1), Ship(1)]
+
+        self._add_ship(self._default_ships)
+
+    @classmethod
+    def _valid_size(cls, size):
+        if cls._MIN_SIZE <= size <= cls._MAX_SIZE:
+            return True
+        else:
+            raise ValueError(f'Size {size} exceeds permissible: [{cls._MIN_SIZE}, {cls._MAX_SIZE}]')
 
     def _create_board(self):
         """Метод создает игровое поле в виде двумерного массива и заполняет его
@@ -44,7 +57,7 @@ class Board:
                 # Заполняем неактивное игровое поле объектами типа Border
                 elif (self._size + width_border > x > 0 == y or
                       x == 0 and 0 < y < self._size + width_border):
-                    border = History(x, y)  # Создаем экземпляр границы
+                    border = History(x, y, self._size)  # Создаем экземпляр границы
                     line.append(border)
 
                 else:
@@ -56,17 +69,14 @@ class Board:
         return result
 
     @staticmethod
-    def __get_cells_coords_to_deactivate(ship_coords):
-        # TODO: проанализировать возможность усовершенствовать алгоритм примененный в методе,
-        #  с целью  убрать дубликаты и самопересечение маски с кораблем, в случаях когда ранг корабля > 1.
+    def _get_cells_coords_to_deactivate(ship_coords):
         for coord in ship_coords:
             x, y = coord
             yield from ((x, y), (x - 1, y - 1), (x - 1, y), (x - 1, y + 1), (x, y - 1),
                         (x, y + 1), (x + 1, y - 1), (x + 1, y), (x + 1, y + 1))
 
     def _deactivate_cells(self, ship_coords):
-        # преобразование в set используется как 'костыль' чтобы убрать дубликаты и самопересечение маски с кораблем.
-        to_deactivate = set(self.__get_cells_coords_to_deactivate(ship_coords))
+        to_deactivate = set(self._get_cells_coords_to_deactivate(ship_coords))
 
         for x, y in to_deactivate:
             if not self._board[x][y].is_deactivated:
@@ -135,12 +145,12 @@ class Board:
                         ('left', 'right'))
                     passage += 1
 
-    def add_ship(self, ships):
+    def _add_ship(self, ships):
         for ship in ships:
 
             self._calc_ship_coords(ship)
             self._deactivate_cells(ship.coords)
-            self.ships.append(ship.coords)
+            # self.ships.append(ship.coords)
             for coord in ship.coords:
                 x, y = coord
                 self._board[x][y] = ship
