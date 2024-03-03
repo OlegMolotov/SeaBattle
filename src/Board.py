@@ -1,8 +1,8 @@
 from pprint import pprint
 from random import choice
-import sys
+
 from src.Cell import Cell, Border, History
-import textwrap as tw
+
 
 class Board:
 
@@ -146,10 +146,5 @@ class Board:
                 self._board[x][y] = ship
 
     def draw(self):
-        # pprint(self._board, compact=True, depth=2, width=self._size * 20, indent=2)
-
         for line in self._board:
-            line = str(''.join(str(line)))
-            print(line)
-
-
+            print(*line)

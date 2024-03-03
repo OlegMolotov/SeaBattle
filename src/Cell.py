@@ -43,11 +43,10 @@ class Cell:
         консолью операционной системы Windows до Windows 10.
         Подробнее в статье https://habr.com/ru/sandbox/158854/
         """
-        return f'\033[{self._colors[self._color]}m{self._view}\033[0m'
-        # if not self._is_deactivated:
-        #     return f'\033[{self._colors["blue"]}m{self._view}\033[0m'
-        # else:
-        #     return f'\033[{self._colors["white"]}m{self._view}\033[0m'
+        if self._coord[1] == 0 and len(self._view) < 2:
+            return f'\033[{self._colors[self._color]}m {self._view}\033[0m'
+        else:
+            return f'\033[{self._colors[self._color]}m{self._view}\033[0m'
 
 
 class Border(Cell):
@@ -63,16 +62,11 @@ class Border(Cell):
         super().__init__(x, y)
         # Символ в виде которого отображается ячейка на игровом поле str
         self._view = 'x'
-        self.left_alignment()
         # Хранит логический флаг отвечающий за состояние ячейки
         # _is_deactivated = True - ячейка всегда занята и это значение не должно
         # изменятся, так как экземпляры класса Border служат для вывода служебной информации
         self._is_deactivated = True
         self._color = 'black'
-
-    def left_alignment(self):
-        if 12 > self._coord[0] >= 0 == self._coord[1] and len(self._view) < 2:
-            self._view = self._view.ljust(2, ' ')
 
 
 class History(Border):
@@ -81,7 +75,6 @@ class History(Border):
     def __init__(self, x, y):
         super().__init__(x, y)
         self._set_view(x, y)
-        self.left_alignment()
         self._color = 'white'
 
     def _set_view(self, x, y):
