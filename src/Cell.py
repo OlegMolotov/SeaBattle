@@ -9,7 +9,7 @@ class Cell:
         # Координаты ячейки в виде tuple(int, int)
         self._coord = (x, y)
         # Символ в виде которого отображается ячейка на игровом поле str
-        self._view = "0"
+        self._view = "□"
         # Хранит  логический флаг отвечающий за состояние ячейки
         # свободна _is_deactivated = False
         # занята _is_deactivated = True

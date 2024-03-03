@@ -10,7 +10,7 @@ class Ship:
         # Координаты корабля в виде list[tuple(int, int), tuple(int, int), ...]
         self._coords = []
         # Символ в виде которого отображается корабль в консоли str
-        self._view = '#'
+        self._view = '■'
 
     def add_coords(self, coords):
         """
