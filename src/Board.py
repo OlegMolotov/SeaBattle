@@ -5,8 +5,8 @@ from src.Ship import Ship
 
 
 class Board:
-    _MAX_SIZE = 25
     _MIN_SIZE = 10
+    _MAX_SIZE = 25
 
     def __init__(self, size=10):
         # Размер игрового поля, по умолчанию равен 10 (классический вариант игры).
@@ -79,7 +79,7 @@ class Board:
         to_deactivate = set(self._get_cells_coords_to_deactivate(ship_coords))
 
         for x, y in to_deactivate:
-            if not self._board[x][y].is_deactivated:
+            if self._board[x][y].is_active:
                 self._active_cells.remove((x, y))
                 self._board[x][y].deactivate()
 
@@ -149,11 +149,12 @@ class Board:
         for ship in ships:
 
             self._calc_ship_coords(ship)
+            ship.create_sections()
             self._deactivate_cells(ship.coords)
             # self.ships.append(ship.coords)
-            for coord in ship.coords:
-                x, y = coord
-                self._board[x][y] = ship
+            for section in ship.get_sections():
+                x, y = section.coord
+                self._board[x][y] = section
 
     def draw(self):
         for line in self._board:

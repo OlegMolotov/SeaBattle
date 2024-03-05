@@ -185,7 +185,7 @@ fabric.properties
 *.xlsx
 # Temp python file 
 src/tmp.py
-
-
+# Bat
+*.bat
 # idea folder, uncomment if you don't need it
 .idea
