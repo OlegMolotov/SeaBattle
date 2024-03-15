@@ -150,10 +150,16 @@ class Board:
 
             self._calc_ship_coords(ship)
             ship.create_sections()
+            for section in ship.get_sections():
+                x, y = section.coord
+                c = self._board[x][y]
+                if not c.is_active:
+                    raise IndexError("+")
             self._deactivate_cells(ship.coords)
             # self.ships.append(ship.coords)
             for section in ship.get_sections():
                 x, y = section.coord
+                c = self._board[x][y]
                 self._board[x][y] = section
 
     def draw(self):

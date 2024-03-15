@@ -12,7 +12,7 @@ class ShipSection(BaseGameObject):
 
     @property
     def is_alive(self):
-        return self.is_alive
+        return self._is_alive
 
     def kill(self):
         self._is_alive = False
