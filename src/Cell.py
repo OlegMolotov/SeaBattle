@@ -69,10 +69,6 @@ class Border(Cell):
         self._is_active = False
         self._color = 'black'
 
-    def _left_alignment(self):
-        pass
-
-
     def __repr__(self):
         view = self._view
         color = self._COLORS[self._color]
@@ -101,4 +97,3 @@ class History(Border):
 
         elif x == 0 and 0 < y < board_size + 1:
             self._view = self._letter_history_chars[y - 1]
-

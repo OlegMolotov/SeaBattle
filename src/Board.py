@@ -82,6 +82,7 @@ class Board:
             if self._board[x][y].is_active:
                 self._active_cells.remove((x, y))
                 self._board[x][y].deactivate()
+        return list(to_deactivate)
 
     def _get_next_ship_coord(self, start, direction, depth):
         calc = {'left': lambda a, b: (a, b - 1), 'up': lambda a, b: (a - 1, b),
@@ -96,7 +97,7 @@ class Board:
                 break
 
     def _calc_ship_coords(self, ship):
-        shp = ship.coords
+        coords = list()
         # Начальная координата корабля.
         x, y = choice(self._active_cells)
         direct = choice(('left', 'right', 'up', 'down'))
@@ -108,7 +109,7 @@ class Board:
         # TODO: passage  - Костыль чтобы ограничить количество проходов, необходимо подумать как реализовать по другому
         passage = 0
 
-        while len(shp) != length_ship:
+        while len(coords) != length_ship:
             if passage == 2:
                 x, y = choice(self._active_cells)
                 direct = choice(('left', 'right', 'up', 'down'))
@@ -120,7 +121,7 @@ class Board:
                 # Добавляем начальную координату в начало.
                 valid_coords_along_start_direct.insert(0, (x, y))
                 # Расчет закончен.
-                shp.extend(valid_coords_along_start_direct)
+                coords.extend(valid_coords_along_start_direct)
             elif len(valid_coords_along_start_direct) < remaining_length:
                 # Вычисляем сколько нехватает координат.
                 deficit = remaining_length - len(valid_coords_along_start_direct)
@@ -137,31 +138,40 @@ class Board:
                     # Добавляем "invert_direct" координаты.
                     valid_coords_along_start_direct.extend(valid_coords_along_inverted_direct)
                     # Расчет закончен возвращаем координаты корабля.
-                    shp.extend(valid_coords_along_start_direct)
+                    coords.extend(valid_coords_along_start_direct)
 
                 elif len(valid_coords_along_inverted_direct) < remaining_length:
                     # Если попали сюда значит на начальной оси корабль не становиться. Меняем направление на другую ось.
                     direct = choice(('up', 'down')) if direct == 'left' or direct == 'right' else choice(
                         ('left', 'right'))
                     passage += 1
+        return coords
 
     def _add_ship(self, ships):
         for ship in ships:
 
-            self._calc_ship_coords(ship)
-            ship.create_sections()
-            for section in ship.get_sections():
+            coords = self._calc_ship_coords(ship)
+            ship.sections = coords
+            # ------ Отладка ------
+            for section in ship.sections:
                 x, y = section.coord
                 c = self._board[x][y]
                 if not c.is_active:
                     raise IndexError("+")
-            self._deactivate_cells(ship.coords)
-            # self.ships.append(ship.coords)
-            for section in ship.get_sections():
+            # ---------------------
+            mask = self._deactivate_cells(coords)
+            ship.mask = mask
+
+            for section in ship.sections:
                 x, y = section.coord
-                c = self._board[x][y]
                 self._board[x][y] = section
 
     def draw(self):
         for line in self._board:
             print(*line)
+
+    def get_cell(self, x, y):
+        return self._board[x][y]
+
+    def is_kill(self):
+        return all(map(lambda o: o.is_killed, self._default_ships))

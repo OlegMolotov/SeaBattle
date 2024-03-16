@@ -2,9 +2,10 @@ from src.BaseObject import BaseGameObject
 
 
 class ShipSection(BaseGameObject):
-    def __init__(self, x, y, rank):
+    def __init__(self, x, y, ship):
         super().__init__(x, y)
-        self._color = self._get_color(rank)
+        self._color = self._set_color(ship.rank)
+        self.ship = ship
 
     @property
     def coord(self):
@@ -15,19 +16,17 @@ class ShipSection(BaseGameObject):
         return self._is_alive
 
     def kill(self):
-        self._is_alive = False
+        if self._is_alive:
+            self.ship.lives -= 1
+            self._is_alive = False
+        else:
+            raise ValueError(f'The section {self.coord} has already been killed!')
 
     @staticmethod
-    def _get_color(rank):
-        color = 'violet'
-        if rank == 2:
-            color = 'yellow'
-        elif rank == 3:
-            color = 'green'
-        elif rank == 4:
-            color = 'red'
+    def _set_color(rank):
+        colors = {1: 'violet', 2: 'yellow', 3: 'green', 4: 'red'}
 
-        return color
+        return colors[rank]
 
     def __repr__(self):
         """
@@ -53,36 +52,39 @@ class ShipSection(BaseGameObject):
 
 class Ship:
     def __init__(self, rank):
-        # Ранг корабля int
         self._rank = rank
-        # Координаты корабля в виде list[tuple(int, int), tuple(int, int), ...]
         self._sections = []
-        self._coords = []
-
-    def get_sections(self):
-        return self._sections
+        self._mask = []
+        self._lives = rank
 
     @property
-    def coords(self):
-        """
-        Свойство служит для предоставления координат корабля,
-        в виде списка кортежей координат всех секций корабля
-        return [(x1, y1), (x2, y2) ...]
-        """
-        return self._coords
+    def lives(self):
+        return self._lives
 
-    def create_sections(self):
-        for coord in self._coords:
-            x, y = coord
-            section = ShipSection(x, y, self._rank)
+    @lives.setter
+    def lives(self, value):
+        self._lives = value
 
-            self._sections.append(section)
+    @property
+    def sections(self):
+        return self._sections
+
+    @sections.setter
+    def sections(self, coords):
+        self._sections.extend([ShipSection(x, y, self) for x, y in coords])
 
     @property
     def rank(self):
-        """
-        Свойство служит для предоставления ранга корабля,
-        в виде целого числа в диапазоне от 1 до 4
-        return int
-        """
         return self._rank
+
+    @property
+    def mask(self):
+        return self._mask
+
+    @mask.setter
+    def mask(self, coords):
+        self._mask.extend(coords)
+
+    @property
+    def is_killed(self):
+        return self._lives == 0

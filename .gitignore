@@ -187,5 +187,7 @@ fabric.properties
 src/tmp.py
 # Bat
 *.bat
+# EdrawMax
+*.eddx
 # idea folder, uncomment if you don't need it
 .idea
