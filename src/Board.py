@@ -8,10 +8,11 @@ class Board:
     _MIN_SIZE = 10
     _MAX_SIZE = 25
 
-    def __init__(self, size=10):
+    def __init__(self, mode='player', size=10):
         # Размер игрового поля, по умолчанию равен 10 (классический вариант игры).
         if self._valid_size(size):
             self._size = size
+        self._mode = mode
         # Содержит список свободных ячеек игрового поля в виде кортежей координат
         # list[tuple(int, int), tuple(int, int), ...].
         self._active_cells = list()
@@ -20,10 +21,11 @@ class Board:
         # и соответственно верхняя и нижняя.
         self._board = self._create_board()
 
-        self._default_ships = [Ship(4), Ship(3), Ship(3), Ship(2),
-                               Ship(2), Ship(2), Ship(1), Ship(1), Ship(1), Ship(1)]
+        self._default_ships = [Ship(4, mode), Ship(3, mode), Ship(3, mode), Ship(2, mode),
+                               Ship(2, mode), Ship(2, mode), Ship(1, mode), Ship(1, mode), Ship(1, mode), Ship(1, mode)]
 
         self._add_ship(self._default_ships)
+
 
     @classmethod
     def _valid_size(cls, size):
@@ -51,17 +53,17 @@ class Board:
             for y in range(size + width_border * 2):  # умножаем на 2, чтобы учесть смежную границу
                 # Заполняем активное игровое поле объектами типа Cell
                 if width_border <= y <= size and width_border <= x <= size:
-                    cell = Cell(x, y)  # Создаем экземпляр ячейки
+                    cell = Cell(x, y, self._mode)  # Создаем экземпляр ячейки
                     self._active_cells.append((x, y))  # Добавляем координаты ячейки к списку свободных ячеек
                     line.append(cell)  # Добавляем экземпляр ячейки во внутренний список
                 # Заполняем неактивное игровое поле объектами типа Border
                 elif (self._size + width_border > x > 0 == y or
                       x == 0 and 0 < y < self._size + width_border):
-                    border = History(x, y, self._size)  # Создаем экземпляр границы
+                    border = History(x, y, self._mode, self._size)  # Создаем экземпляр границы
                     line.append(border)
 
                 else:
-                    border = Border(x, y)  # Создаем экземпляр границы
+                    border = Border(x, y, self._mode)  # Создаем экземпляр границы
                     line.append(border)  # Добавляем экземпляр границы во внутренний список
             result.append(line)  # Добавляем внутренний цикл во внешний
 
@@ -173,5 +175,5 @@ class Board:
     def get_cell(self, x, y):
         return self._board[x][y]
 
-    def is_kill(self):
+    def is_killed(self):
         return all(map(lambda o: o.is_killed, self._default_ships))

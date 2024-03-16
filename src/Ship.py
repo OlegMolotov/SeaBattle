@@ -2,8 +2,8 @@ from src.BaseObject import BaseGameObject
 
 
 class ShipSection(BaseGameObject):
-    def __init__(self, x, y, ship):
-        super().__init__(x, y)
+    def __init__(self, x, y, ship, mode):
+        super().__init__(x, y, mode)
         self._color = self._set_color(ship.rank)
         self.ship = ship
 
@@ -28,34 +28,35 @@ class ShipSection(BaseGameObject):
 
         return colors[rank]
 
-    def __repr__(self):
-        """
-        Переопределенный 'магический метод' __repr__ возвращает строку, которая
-        в зависимости от ранга корабля с помощью ANSI-кодов, изменяет цвет символа отображения корабля.
-        ANSI-коды работают на большинстве дистрибутивов Linux, но не поддерживаются
-        консолью операционной системы Windows до Windows 10.
-        Подробнее в статье https://habr.com/ru/sandbox/158854/
-        """
-
+    def _get_view(self):
         view = self._VIEW['alive_ship']
         color = self._COLORS[self._color]
 
         if not self._is_alive:
             view = self._VIEW['destroyed_ship']
 
+        if not self._is_visible and self._is_alive:
+            view = self._VIEW['alive_cell']
+            color = self._COLORS['blue']
+        elif not self._is_visible and not self._is_alive:
+            color = self._COLORS['red']
+
         if self._is_colored:
             return f'\033[{color}m{view}\033[0m'
-
         else:
             return view
 
+    def __repr__(self):
+        return self._get_view()
+
 
 class Ship:
-    def __init__(self, rank):
+    def __init__(self, rank, mode):
         self._rank = rank
         self._sections = []
         self._mask = []
         self._lives = rank
+        self._mode = mode
 
     @property
     def lives(self):
@@ -63,7 +64,10 @@ class Ship:
 
     @lives.setter
     def lives(self, value):
-        self._lives = value
+        if self._lives != 0:
+            self._lives = value
+        else:
+            raise IndexError('An attempt to change the number of lives of a dead ship!')
 
     @property
     def sections(self):
@@ -71,7 +75,7 @@ class Ship:
 
     @sections.setter
     def sections(self, coords):
-        self._sections.extend([ShipSection(x, y, self) for x, y in coords])
+        self._sections.extend([ShipSection(x, y, self, self._mode) for x, y in coords])
 
     @property
     def rank(self):

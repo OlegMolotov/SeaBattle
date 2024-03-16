@@ -4,8 +4,8 @@ from src.BaseObject import BaseGameObject
 
 
 class Cell(BaseGameObject):
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, mode):
+        super().__init__(x, y, mode)
         self._is_active = True
         self._color = "blue"
 
@@ -59,8 +59,8 @@ class Border(Cell):
     для представления буквенно-числовой истории игрового поля.
     """
 
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, mode):
+        super().__init__(x, y, mode)
         # Символ в виде которого отображается ячейка на игровом поле str
         self._view = ' '
         # Хранит логический флаг отвечающий за состояние ячейки
@@ -86,8 +86,8 @@ class Border(Cell):
 class History(Border):
     _letter_history_chars = string.ascii_uppercase
 
-    def __init__(self, x, y, board_size):
-        super().__init__(x, y)
+    def __init__(self, x, y, mode, board_size):
+        super().__init__(x, y, mode)
         self._set_view(x, y, board_size)
         self._color = 'white'
 
