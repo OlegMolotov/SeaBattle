@@ -26,7 +26,6 @@ class Board:
 
         self._add_ship(self._default_ships)
 
-
     @classmethod
     def _valid_size(cls, size):
         if cls._MIN_SIZE <= size <= cls._MAX_SIZE:
@@ -46,8 +45,6 @@ class Board:
         # Создаем переменную для хранения ширины границы игрового поля.
         width_border = 1
 
-        # TODO: Стоит поразмыслить! возможно удастся
-        #  избавиться от вложенных циклов эмулировав двумерный массив - одномерным, даст ли это что-то?
         for x in range(size + width_border * 2):  # умножаем на 2, чтобы учесть смежную границу
             line = list()  # Создаем внутренний список
             for y in range(size + width_border * 2):  # умножаем на 2, чтобы учесть смежную границу

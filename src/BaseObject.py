@@ -5,9 +5,16 @@ class BaseGameObject:
 
     def __init__(self, x, y, mode):
         self._coord = (x, y)
-        self._is_visible = True if mode == 'player' else False
+        self._is_visible = self.__set_mode(mode)
         self._is_colored = True  # использовать или нет ANSI-коды для вывода строкового представления объектов
         self._is_alive = True
 
     def kill(self):
         self._is_alive = False
+
+    @staticmethod
+    def __set_mode(mode):
+        if mode == 'player':
+            return True
+        elif mode == 'enemy':
+            return False

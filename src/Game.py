@@ -15,6 +15,7 @@ class Game:
 
     def run(self):
         while True:
+            os.system('cls||clear')
             self._board.draw()
             self.kill()
             os.system('cls||clear')
