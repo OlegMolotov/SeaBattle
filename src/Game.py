@@ -6,7 +6,10 @@ from src.Cell import History
 
 class Game:
     def __init__(self):
-        self._board = Board()
+        self.ships = {4: 1, 3: 2, 2: 3, 1: 4}
+        self._player_board = Board(self.ships, mode='player')
+        self._enemy_board = Board(self.ships, mode='enemy')
+
 
     def kill(self):
         coord = input('Введите координаты: ').split()
@@ -20,7 +23,7 @@ class Game:
         while True:
             os.system('cls||clear')
             print('\n')
-            self._board.draw()
+            
             self.kill()
             os.system('cls||clear')
 

@@ -8,23 +8,14 @@ class Board:
     _MIN_SIZE = 10
     _MAX_SIZE = 25
 
-    def __init__(self, mode='player', size=10):
-        # Размер игрового поля, по умолчанию равен 10 (классический вариант игры).
+    def __init__(self, ships_list, mode='player', size=10):
         if self._valid_size(size):
             self._size = size
         self._mode = mode
-        # Содержит список свободных ячеек игрового поля в виде кортежей координат
-        # list[tuple(int, int), tuple(int, int), ...].
         self._active_cells = list()
-        # Содержит двумерный список размером 10 (+ 2) на 10 (+ 2) ячеек,
-        # (+2) - границы игрового поля, левая шириной 1 ячейка + правая, шириной 1
-        # и соответственно верхняя и нижняя.
         self._board = self._create_board()
-
-        self._default_ships = [Ship(4, mode), Ship(3, mode), Ship(3, mode), Ship(2, mode),
-                               Ship(2, mode), Ship(2, mode), Ship(1, mode), Ship(1, mode), Ship(1, mode), Ship(1, mode)]
-
-        self._add_ship(self._default_ships)
+        self._ships = [Ship(rank, mode) for rank, quantity in ships_list.items() for _ in range(quantity)]
+        self._add_ship(self._ships)
 
     @classmethod
     def _valid_size(cls, size):
@@ -34,10 +25,6 @@ class Board:
             raise ValueError(f'Size {size} exceeds permissible: [{cls._MIN_SIZE}, {cls._MAX_SIZE}]')
 
     def _create_board(self):
-        """Метод создает игровое поле в виде двумерного массива и заполняет его
-        игровыми объектами типа Cell и Border
-        return list[list[]]"""
-
         # Создаем внешний список.
         result = list()
         # Создаем переменную для хранения размера игрового поля (для удобства).
@@ -157,12 +144,12 @@ class Board:
                 x, y = section.coord
                 self._board[x][y] = section
 
-    def draw(self):
-        for line in self._board:
-            print(*line)
+    @property
+    def board(self):
+        return self._board
 
     def get_cell(self, x, y):
         return self._board[x][y]
 
     def is_killed(self):
-        return all(map(lambda o: o.is_killed, self._default_ships))
+        return all(map(lambda o: o.is_killed, self._ships))
