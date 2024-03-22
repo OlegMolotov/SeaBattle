@@ -105,7 +105,7 @@ class Board:
         length_ship = ship.rank
         # Количество координат корабля минус начальная.
         remaining_length = length_ship - 1
-        # TODO: passage  - Костыль чтобы ограничить количество проходов, необходимо подумать как реализовать по другому
+
         passage = 0
 
         while len(coords) != length_ship:
@@ -148,16 +148,8 @@ class Board:
 
     def _add_ship(self, ships):
         for ship in ships:
-
             coords = self._calc_ship_coords(ship)
             ship.sections = coords
-            # ------ Отладка ------
-            for section in ship.sections:
-                x, y = section.coord
-                c = self._board[x][y]
-                if not c.is_active:
-                    raise IndexError("+")
-            # ---------------------
             mask = self._deactivate_cells(coords)
             ship.mask = mask
 
