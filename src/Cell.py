@@ -68,8 +68,16 @@ class History(Border):
         self._color = 'white'
 
     @classmethod
-    def get_index(cls, c):
+    def is_char_in_history_chars(cls, c):
+        return c in cls._letter_history_chars
+
+    @classmethod
+    def get_char_index(cls, c):
         return cls._letter_history_chars.index(c) + 1
+
+    @classmethod
+    def get_valid_history_chars(cls):
+        return cls._letter_history_chars
 
     def _set_view(self, x, y, board_size):
         if board_size + 1 > x > 0 == y:

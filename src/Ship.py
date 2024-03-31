@@ -5,7 +5,7 @@ class ShipSection(BaseGameObject):
     def __init__(self, x, y, ship, mode):
         super().__init__(x, y, mode)
         self._color = self._set_color(ship.rank)
-        self.ship = ship
+        self._ship = ship
 
     @property
     def coord(self):
@@ -27,6 +27,10 @@ class ShipSection(BaseGameObject):
         colors = {1: 'violet', 2: 'yellow', 3: 'green', 4: 'red'}
 
         return colors[rank]
+
+    @property
+    def ship(self):
+        return self._ship
 
     def _get_view(self):
         view = self._VIEW['alive_ship']

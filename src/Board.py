@@ -8,7 +8,7 @@ class Board:
     _MIN_SIZE = 10
     _MAX_SIZE = 25
 
-    def __init__(self, ships_list, mode='player', size=10):
+    def __init__(self, ships_list, size, mode='player'):
         if self._valid_size(size):
             self._size = size
         self._mode = mode
@@ -71,14 +71,16 @@ class Board:
         return list(to_deactivate)
 
     def _get_next_ship_coord(self, start, direction, depth):
-        calc = {'left': lambda a, b: (a, b - 1), 'up': lambda a, b: (a - 1, b),
-                'right': lambda a, b: (a, b + 1), 'down': lambda a, b: (a + 1, b)}
+        calc_next_coord = {'left': lambda n_x, n_y: (n_x, n_y - 1),
+                           'up': lambda n_x, n_y: (n_x - 1, n_y),
+                           'right': lambda n_x, n_y: (n_x, n_y + 1),
+                           'down': lambda n_x, n_y: (n_x + 1, n_y)}
         x, y = start
-        next_coord = calc[direction](x, y)
+        next_coord = calc_next_coord[direction](x, y)
         for _ in range(depth):
             if next_coord in self._active_cells:
                 yield next_coord
-                next_coord = calc[direction](next_coord[0], next_coord[1])
+                next_coord = calc_next_coord[direction](next_coord[0], next_coord[1])
             else:
                 break
 
@@ -147,6 +149,14 @@ class Board:
     @property
     def board(self):
         return self._board
+
+    @property
+    def length(self):
+        return len(self._board)
+
+    @property
+    def size(self):
+        return self._size
 
     def get_cell(self, x, y):
         return self._board[x][y]
