@@ -1,7 +1,7 @@
 from random import choice
 
 from src.Cell import Cell, Border, History
-from src.Ship import Ship
+from src.Ship import Ship, ShipSection
 
 
 class Board:
@@ -71,18 +71,23 @@ class Board:
         return list(to_deactivate)
 
     def _get_next_ship_coord(self, start, direction, depth):
+        x, y = start
+        next_coord = self.calc_next_coord(direction, x, y)
+        for _ in range(depth):
+            if next_coord in self._active_cells:
+                yield next_coord
+                next_coord = self.calc_next_coord(direction, next_coord[0], next_coord[1])
+            else:
+                break
+
+    @staticmethod
+    def calc_next_coord(direction, start_x, start_y):
         calc_next_coord = {'left': lambda n_x, n_y: (n_x, n_y - 1),
                            'up': lambda n_x, n_y: (n_x - 1, n_y),
                            'right': lambda n_x, n_y: (n_x, n_y + 1),
                            'down': lambda n_x, n_y: (n_x + 1, n_y)}
-        x, y = start
-        next_coord = calc_next_coord[direction](x, y)
-        for _ in range(depth):
-            if next_coord in self._active_cells:
-                yield next_coord
-                next_coord = calc_next_coord[direction](next_coord[0], next_coord[1])
-            else:
-                break
+
+        return calc_next_coord[direction](start_x, start_y)
 
     def _calc_ship_coords(self, ship):
         coords = list()
@@ -163,3 +168,9 @@ class Board:
 
     def is_killed(self):
         return all(map(lambda o: o.is_killed, self._ships))
+
+    def is_ship(self, x, y):
+        return isinstance(self._board[x][y], ShipSection)
+
+    def is_cell(self, x, y):
+        return isinstance(self._board[x][y], Cell)
