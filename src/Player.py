@@ -1,8 +1,6 @@
 from random import choice
 from src.Board import Board
 from src.Cell import History
-from src.Ship import ShipSection
-from src.Cell import Cell, Border
 
 
 class Character:
@@ -34,7 +32,6 @@ class Character:
 class Player(Character):
     def __init__(self, score, board):
         super().__init__(score, board)
-        self._history_moves = []
 
     def move(self):
         player_input = input('Enter coordinates: ')
@@ -49,9 +46,12 @@ class Player(Character):
             x = int(x)
             y = History.get_char_index(y.upper())
 
-            # self.del_avavailable_coord((x, y))
-            return x, y
+            if (x, y) in self._available_coords:
+                self._available_coords.remove((x, y))
+                return x, y
+            else:
 
+                return 'error'
         else:
             return 'error'
 
@@ -59,88 +59,44 @@ class Player(Character):
 class Enemy(Character):
     def __init__(self, score, board):
         super().__init__(score, board)
-        self.direction = 'left'
-        self.mem_dir = None
+        self.direction = None
         self.last_hit = []
         self.last_coord = None
-        self.miss = False
-        self.hit = False
-        self.trap = False
 
     def move(self):
-        """        while True:
-            print(self.direction)
-            print(self.last_hit)
-            print(self.last_coord)
-            print('hit ',self.hit)
-            print('miss ',self.miss)
-            if len(self.last_hit) > 1:
-                if self.direction in ('right', 'left'):
-                    self.direction = choice(('right', 'left'))
-                elif self.direction in ('up', 'down'):
-                    self.direction = choice(('up', 'down'))
-
-            if not self.last_hit:
-                coord = choice(self._available_coords)
-                self._available_coords.remove(coord)
-                return coord
-            else:
-                self.last_coord = self.get_last_coord()
-                coord = Board.calc_next_coord(self.direction, self.last_coord[0], self.last_coord[1])
-                if coord in self._available_coords:
-                    self._available_coords.remove(coord)
-                    return coord
-                elif self.hit and self.miss:
-                    self.trap = True
-                    if len(self.last_hit) == 1:
-                        self.direction = choice(('right', 'left', 'up', 'down'))
-                    continue
-                elif self.hit:
-
-                    if len(self.last_hit) == 1:
-                        self.direction = choice(('right', 'left', 'up', 'down'))
-
-                elif self.miss:
-                    if len(self.last_hit) == 1:
-                        self.direction = choice(('up', 'down', 'right', 'left'))
-                else:
-                    if len(self.last_hit) == 1:
-                        self.direction = 'right'
-                    continue"""
         while True:
-            print(self.direction)
-            print(self.last_hit)
-            print(self.last_coord)
-            if len(self.last_hit) > 1:
-                if self.direction in ('right', 'left'):
-                    self.direction = choice(('right', 'left'))
-                elif self.direction in ('up', 'down'):
-                    self.direction = choice(('up', 'down'))
-            if len(self.last_hit) == 1:
-                self.direction = choice(('right', 'left', 'up', 'down'))
-
             if not self.last_hit:
                 coord = choice(self._available_coords)
                 self._available_coords.remove(coord)
-
                 return coord
+
             else:
-                self.last_coord = self.get_last_coord()
-                coord = Board.calc_next_coord(self.direction, self.last_coord[0], self.last_coord[1])
+                self.change_direction()
+                self.set_last_coord()
+                x, y = self.last_coord[0], self.last_coord[1]
+                coord = Board.calc_next_coord(self.direction, x, y)
+
                 if coord in self._available_coords:
                     self._available_coords.remove(coord)
-
                     return coord
 
-                t = input("do")
                 continue
 
-    def get_last_coord(self):
+    def set_last_coord(self):
         if len(self.last_hit) == 1:
-            return self.last_hit[0]
+            self.last_coord = self.last_hit[0]
         elif len(self.last_hit) == 2:
-            return choice(self.last_hit)
+            self.last_coord = choice(self.last_hit)
         elif len(self.last_hit) > 2:
             self.last_hit.sort()
-            return choice((self.last_hit[0], self.last_hit[-1]))
+            self.last_coord = choice((self.last_hit[0], self.last_hit[-1]))
+
+    def change_direction(self):
+        if len(self.last_hit) == 1:
+            self.direction = choice(('right', 'left', 'up', 'down'))
+        if len(self.last_hit) > 1:
+            if self.direction in ('right', 'left'):
+                self.direction = choice(('right', 'left'))
+            elif self.direction in ('up', 'down'):
+                self.direction = choice(('up', 'down'))
 
