@@ -28,19 +28,6 @@ class Game:
     def _change_state(self):
         self._state = self._available_state[0] if self._state == self._available_state[1] else self._available_state[1]
 
-    @staticmethod
-    def _kill(x, y, board):
-        obj = board.get_cell(x, y)
-        is_cell = board.is_cell(x, y)
-        is_ship = board.is_ship(x, y)
-        if is_cell:
-            obj.kill()
-            return False
-        elif is_ship:
-            obj.kill()
-            print('\a')
-            return True
-
     def _draw(self):
         for i in range(self.player.board.length):
             print(*self.player.board.board[i], self._ui.get_boards_sep(), *self.enemy.board.board[i])
@@ -57,46 +44,40 @@ class Game:
                     self.print_invalid_input_message()
                     time.sleep(self._time_delay)
                     continue
+                elif player_input == 'repeat move':
+                    print('have you been here before!')
+                    print('Wait...')
+                    time.sleep(self._time_delay)
+                    continue
                 else:
                     x, y = player_input
-                    is_hit = self._kill(x, y, self.enemy.board)
+                    is_hit = self.enemy.board.kill_cell(x, y)
                     if is_hit:
-                        is_kill = self.is_killed_ship((x, y), self.enemy.board)
-                        if is_kill:
-                            self.kill_ship_mask((x, y), self.enemy.board)
-                            mask = self.enemy.board.get_cell(x, y).ship.mask
+                        print('\a')
+                        if self.enemy.board.is_killed_ship(x, y):
+                            self.enemy.board.kill_ship_mask(x, y)
+                            mask = self.enemy.board.get_ship_mask(x, y)
                             self.player.del_avavailable_coords(mask)
                     else:
                         self._change_state()
             else:
                 enemy_input = self.enemy.move()
                 x, y = enemy_input
-                is_hit = self._kill(x, y, self.player.board)
+                is_hit = self.player.board.kill_cell(x, y)
                 if is_hit:
+                    print('\a')
                     self.enemy.last_hit.append((x, y))
-                    is_kill = self.is_killed_ship((x, y), self.player.board)
+                    is_kill = self.player.board.is_killed_ship(x, y)
                     if is_kill:
-                        self.kill_ship_mask(choice(self.enemy.last_hit), self.player.board)
+                        self.player.board.kill_ship_mask(x, y)
                         self.enemy.last_hit = []
                         self.enemy.last_coord = None
-                        mask = self.player.board.get_cell(x, y).ship.mask
+                        mask = self.player.board.get_ship_mask(x, y)
                         self.enemy.del_avavailable_coords(mask)
                 else:
                     self._change_state()
 
             os.system('cls||clear')
-
-    @staticmethod
-    def kill_ship_mask(coord, board):
-        ship = board.get_cell(*coord).ship
-        for c in ship.mask:
-            if board.is_cell(*c):
-                board.get_cell(*c).kill()
-
-    @staticmethod
-    def is_killed_ship(coord, board):
-        ship = board.get_cell(*coord)
-        return ship.ship.is_killed
 
     def print_invalid_input_message(self):
         print('Invalid input!')

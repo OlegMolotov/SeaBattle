@@ -50,8 +50,8 @@ class Player(Character):
                 self._available_coords.remove((x, y))
                 return x, y
             else:
+                return 'repeat move'
 
-                return 'error'
         else:
             return 'error'
 

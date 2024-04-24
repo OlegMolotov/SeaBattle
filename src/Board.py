@@ -174,3 +174,34 @@ class Board:
 
     def is_cell(self, x, y):
         return isinstance(self._board[x][y], Cell)
+
+    def kill_cell(self, x, y):
+        obj = self.get_cell(x, y)
+        obj.kill()
+
+        is_cell = self.is_cell(x, y)
+        is_ship = self.is_ship(x, y)
+
+        if is_ship:
+            return True
+        elif is_cell:
+            return False
+
+    def kill_ship_mask(self, x, y):
+        is_ship = self.is_ship(x, y)
+        if is_ship:
+            mask = self.get_cell(x, y).ship.mask
+            for coord in mask:
+                if self.is_cell(*coord):
+                    self.get_cell(*coord).kill()
+        else:
+            raise ValueError()
+
+    def get_ship_mask(self, x, y):
+        if self.is_ship(x, y):
+            return self.get_cell(x, y).ship.mask
+        else:
+            raise ValueError()
+
+    def is_killed_ship(self, x, y):
+        return self.get_cell(x, y).ship.is_killed
