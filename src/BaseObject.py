@@ -1,6 +1,7 @@
+from abc import ABC
 
 
-class BaseGameObject:
+class BaseGameObject(ABC):
     """
     Это базовый абстрактный класс для игровых объектов типа ShipSection и Cell.
 
@@ -51,7 +52,7 @@ class BaseGameObject:
 
     def kill(self):
         """
-        Метод "убивает" игровой объект
+        Метод "убивает" игровой объек
         """
         self._is_alive = False
 

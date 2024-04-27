@@ -1,5 +1,4 @@
 from random import choice
-
 from src.Cell import Cell, Border, History
 from src.Ship import Ship, ShipSection
 
@@ -13,7 +12,7 @@ class Board:
             self._size = size
         self._mode = mode
         self._active_cells = list()
-        self._board = self._create_board()
+        self._body = self._create_board()
         self._ships = [Ship(rank, mode) for rank, quantity in ships_list.items() for _ in range(quantity)]
         self._add_ship(self._ships)
 
@@ -65,9 +64,11 @@ class Board:
         to_deactivate = set(self._get_cells_coords_to_deactivate(ship_coords))
 
         for x, y in to_deactivate:
-            if self._board[x][y].is_active:
+            # if self._body[x][y].is_active:
+            #     self._active_cells.remove((x, y))
+                # self._body[x][y].deactivate()
+            if (x, y) in self._active_cells:
                 self._active_cells.remove((x, y))
-                self._board[x][y].deactivate()
         return list(to_deactivate)
 
     def _get_next_ship_coord(self, start, direction, depth):
@@ -149,31 +150,31 @@ class Board:
 
             for section in ship.sections:
                 x, y = section.coord
-                self._board[x][y] = section
+                self._body[x][y] = section
 
     @property
-    def board(self):
-        return self._board
+    def body(self):
+        return self._body
 
     @property
     def length(self):
-        return len(self._board)
+        return len(self._body)
 
     @property
     def size(self):
         return self._size
 
     def get_cell(self, x, y):
-        return self._board[x][y]
+        return self._body[x][y]
 
     def is_killed(self):
         return all(map(lambda o: o.is_killed, self._ships))
 
     def is_ship(self, x, y):
-        return isinstance(self._board[x][y], ShipSection)
+        return isinstance(self._body[x][y], ShipSection)
 
     def is_cell(self, x, y):
-        return isinstance(self._board[x][y], Cell)
+        return isinstance(self._body[x][y], Cell)
 
     def kill_cell(self, x, y):
         obj = self.get_cell(x, y)

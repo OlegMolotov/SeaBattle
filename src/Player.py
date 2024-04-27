@@ -1,9 +1,10 @@
+from abc import ABC, abstractmethod
 from random import choice
 from src.Board import Board
 from src.Cell import History
 
 
-class Character:
+class Character(ABC):
     def __init__(self, score, board):
         self._score = score
         self._board = board
@@ -14,14 +15,12 @@ class Character:
     def board(self):
         return self._board
 
+    @abstractmethod
     def move(self):
         pass
 
     def get_score(self):
         return self._score
-
-    def change_readiness_to_move(self):
-        self.ready_to_move = True if not self.ready_to_move else False
 
     def del_avavailable_coords(self, coords):
         for coord in coords:
@@ -40,12 +39,9 @@ class Player(Character):
             return 'exit'
         x = player_input[1:]
         y = player_input[0]
-        if (x in [str(c) for c in range(1, self._board.size + 1)]
-                and History.is_char_in_history_chars(y.upper())
-                and History.get_char_index(y.upper()) < self._board.size + 1):
+        y = History.get_char_index(y)
+        if x in [str(c) for c in range(1, self._board.size + 1)] and y is not None and y < self._board.size + 1:
             x = int(x)
-            y = History.get_char_index(y.upper())
-
             if (x, y) in self._available_coords:
                 self._available_coords.remove((x, y))
                 return x, y

@@ -30,7 +30,7 @@ class Game:
 
     def _draw(self):
         for i in range(self.player.board.length):
-            print(*self.player.board.board[i], self._ui.get_boards_sep(), *self.enemy.board.board[i])
+            print(*self.player.board.body[i], self._ui.get_boards_sep(), *self.enemy.board.body[i])
 
     def run(self):
         while True:
