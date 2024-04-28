@@ -152,7 +152,7 @@ class History(Border):
         """
         char = char.upper()
 
-        if char in cls._letter_history_chars:
+        if char in cls._history_chars:
             return cls._history_chars.index(char) + 1
         else:
             return None
@@ -173,4 +173,4 @@ class History(Border):
             self._view = str(x)
 
         elif x == 0 and 0 < y < board_size + 1:
-            self._view = self._letter_history_chars[y - 1]
+            self._view = self._history_chars[y - 1]

@@ -21,7 +21,7 @@ class Game:
         self.player = Player(start_score, player_board)
         self.enemy = Enemy(start_score, enemy_board)
 
-        self._ui = GameUi(game_board_size, self.player.board.length)
+        self._ui = GameUi(game_board_size, self.player.board.full_size)
 
         self._state = self._available_state[0]
 
@@ -29,7 +29,7 @@ class Game:
         self._state = self._available_state[0] if self._state == self._available_state[1] else self._available_state[1]
 
     def _draw(self):
-        for i in range(self.player.board.length):
+        for i in range(self.player.board.full_size):
             print(*self.player.board.body[i], self._ui.get_boards_sep(), *self.enemy.board.body[i])
 
     def run(self):
@@ -51,7 +51,7 @@ class Game:
                     continue
                 else:
                     x, y = player_input
-                    is_hit = self.enemy.board.kill_cell(x, y)
+                    is_hit = self.enemy.board.kill_ship_section(x, y)
                     if is_hit:
                         print('\a')
                         if self.enemy.board.is_killed_ship(x, y):
@@ -63,7 +63,7 @@ class Game:
             else:
                 enemy_input = self.enemy.move()
                 x, y = enemy_input
-                is_hit = self.player.board.kill_cell(x, y)
+                is_hit = self.player.board.kill_ship_section(x, y)
                 if is_hit:
                     print('\a')
                     self.enemy.last_hit.append((x, y))

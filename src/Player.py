@@ -70,7 +70,7 @@ class Enemy(Character):
                 self.change_direction()
                 self.set_last_coord()
                 x, y = self.last_coord[0], self.last_coord[1]
-                coord = Board.calc_next_coord(self.direction, x, y)
+                coord = Board.get_next_coord(self.direction, x, y)
 
                 if coord in self._available_coords:
                     self._available_coords.remove(coord)
