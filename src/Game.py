@@ -19,8 +19,8 @@ class Game:
         player_board = Board(ships, game_board_size, mode='player')
         enemy_board = Board(ships, game_board_size, mode='enemy')
 
-        self.player = Player(1, player_board)
-        self.enemy = Enemy(1, enemy_board)
+        self.player = Player(start_score, player_board)
+        self.enemy = Enemy(start_score, enemy_board)
 
         self._ui = GameUi()
 
@@ -35,6 +35,7 @@ class Game:
             print(*self.player.board.body[i], self._ui.get_boards_sep(), *self.enemy.board.body[i])
 
     def run(self):
+        self._ui.print_intro(self.player.board.size)
         while not self.is_game_over():
             os.system('cls||clear')
             self._draw()

@@ -12,9 +12,12 @@ class GameUi:
     def get_boards_sep(cls):
         return cls._boards_sep
 
-    @staticmethod
-    def print_intro():
-        pass
+    def print_intro(self, board_size):
+        welcome = 'Welcome to the game SeaBattle !'
+
+        print(self._game_center_alignment(welcome, board_size))
+        print(self._game_center_alignment('Wait ...', board_size))
+        time.sleep(self._time_delay)
 
     @classmethod
     def print_score(cls, player_score, enemy_score, board_full_size):
@@ -28,7 +31,7 @@ class GameUi:
         print('Correct input (example): a5 or A5')
         print(f'To exit the game, enter: {cls._exit[0]} or {cls._exit[1]}')
         print('Wait...')
-        time.sleep(self._time_delay)
+        time.sleep(cls._time_delay)
 
     def print_game_over(self, vinner, board_size):
         print(self._game_center_alignment('GAME OVER !', board_size))
