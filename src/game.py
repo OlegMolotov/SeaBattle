@@ -1,9 +1,11 @@
 import os
 import time
 import sys
-from src.Board import Board
-from src.GameUi import GameUi
-from src.Player import Player, Enemy
+from game_object import Board
+
+from game_ui import GameUi
+from characters import Player, Enemy
+
 from random import choice
 
 
@@ -98,4 +100,3 @@ class Game:
 
     def get_vinner(self):
         return self.player.type if self.player.score else self.enemy.type
-

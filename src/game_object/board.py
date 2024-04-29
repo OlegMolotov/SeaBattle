@@ -1,6 +1,11 @@
 from random import choice
-from src.Cell import Cell, Border, History
-from src.Ship import Ship, ShipSection
+
+from game_object.cell import Cell
+from game_object.border import Border
+from game_object.legend import Legend
+
+from game_object.ship import Ship
+from game_object.ship_section import ShipSection
 
 
 class Board:
@@ -97,7 +102,7 @@ class Board:
                 # Заполняем неактивное игровое поле объектами типа Border
                 elif (self._size + width_border > x > 0 == y or
                       x == 0 and 0 < y < self._size + width_border):
-                    border = History(x, y, self._mode, self._size)  # Создаем экземпляр границы
+                    border = Legend(x, y, self._mode, self._size)  # Создаем экземпляр границы
                     line.append(border)
 
                 else:
@@ -451,3 +456,7 @@ class Board:
             return ship_section.ship.is_killed
         else:
             raise ValueError(f'The object with x: {x} y: {y} coordinates must be of type ShipSection!')
+
+    @staticmethod
+    def convert_legend_char_to_int(char):
+        return Legend.get_char_index(char)

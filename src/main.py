@@ -1,4 +1,4 @@
-from src.Game import Game
+from game import Game
 # from memory_profiler import memory_usage
 
 
