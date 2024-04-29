@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class BaseGameObject(ABC):
@@ -55,6 +55,10 @@ class BaseGameObject(ABC):
         Метод "убивает" игровой объек
         """
         self._is_alive = False
+
+    @abstractmethod
+    def _get_view(self):
+        pass
 
     @staticmethod
     def __get_visible_flag(mode):

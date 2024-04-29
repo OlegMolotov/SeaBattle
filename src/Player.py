@@ -12,6 +12,10 @@ class Character(ABC):
         self._available_coords = [(x, y) for x in range(1, board.size + 1) for y in range(1, board.size + 1)]
 
     @property
+    def type(self):
+        return self._board.mode
+
+    @property
     def board(self):
         return self._board
 
@@ -19,8 +23,15 @@ class Character(ABC):
     def move(self):
         pass
 
-    def get_score(self):
+    @property
+    def score(self):
         return self._score
+
+    def decrement_score(self):
+        if self._score != 0:
+            self._score -= 1
+        else:
+            raise IndexError()
 
     def del_avavailable_coords(self, coords):
         for coord in coords:
@@ -46,10 +57,10 @@ class Player(Character):
                 self._available_coords.remove((x, y))
                 return x, y
             else:
-                return 'repeat move'
+                return 'repeat_move_error'
 
         else:
-            return 'error'
+            return 'invalid_input_error'
 
 
 class Enemy(Character):
@@ -95,4 +106,8 @@ class Enemy(Character):
                 self.direction = choice(('right', 'left'))
             elif self.direction in ('up', 'down'):
                 self.direction = choice(('up', 'down'))
+
+    def clear_hystory(self):
+        self.last_hit = []
+        self.last_coord = None
 
