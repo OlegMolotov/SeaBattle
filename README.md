@@ -1,1 +1,1 @@
-# SeaBattle
+# BattleShip
